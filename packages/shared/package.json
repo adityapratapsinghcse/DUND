@@ -1,0 +1,27 @@
+{
+  "name": "@degrade/shared",
+  "version": "1.0.0",
+  "description": "Shared types, API client, Realtime client, and theme tokens for DEGRADE",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.js"
+    },
+    "./theme": {
+      "types": "./dist/theme/tokens.d.ts",
+      "import": "./dist/theme/tokens.mjs",
+      "default": "./dist/theme/tokens.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}
