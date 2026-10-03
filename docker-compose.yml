@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: degrade_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: degrade_db
+      POSTGRES_USER: degrade
+      POSTGRES_PASSWORD: degrade_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: degrade_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: degrade_backend
+    restart: unless-stopped
+    command: daphne -b 0.0.0.0 -p 8000 degrade.asgi:application
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=docker-secret-key-defence-sih-2026
+      - DATABASE_URL=postgres://degrade:degrade_password@postgres:5432/degrade_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: degrade_worker
+    restart: unless-stopped
+    command: celery -A degrade worker --beat -l info
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=docker-secret-key-defence-sih-2026
+      - DATABASE_URL=postgres://degrade:degrade_password@postgres:5432/degrade_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+    depends_on:
+      - backend
+      - redis
+
+volumes:
+  pgdata:

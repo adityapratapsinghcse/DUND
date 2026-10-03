@@ -1,0 +1,21 @@
+{
+  "name": "defence-sih-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DEGRADE - Immersive Multi-Domain Decision-Making Trainer for Degraded Communication Environments (SIH 2026 PS ID 26248)",
+  "workspaces": [
+    "web",
+    "mobile",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace=web run dev",
+    "build:web": "npm --workspace=web run build",
+    "test:web": "npm --workspace=web run test",
+    "dev:mobile": "npm --workspace=mobile run start",
+    "build:shared": "npm --workspace=packages/shared run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}
