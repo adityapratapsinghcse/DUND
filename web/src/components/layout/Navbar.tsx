@@ -3,13 +3,15 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.js';
 import { ThemeToggle } from '../ui/ThemeToggle.js';
 import { Badge } from '../ui/Badge.js';
-import { LogOut, User as UserIcon, Shield, Radio, Activity, Users, Settings, FileText, ChevronDown } from 'lucide-react';
+import { LogOut, User as UserIcon, Shield, Radio, Activity, Users, Settings, FileText, ChevronDown, HelpCircle, BookOpen } from 'lucide-react';
+import { HowToTestModal } from '../ui/HowToTestModal.js';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [guideModalOpen, setGuideModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -38,9 +40,14 @@ export const Navbar: React.FC = () => {
               <span className="w-1 h-3.5 bg-primary/70 rounded-xs" />
               <span className="w-1 h-4.5 bg-primary/30 rounded-xs" />
             </div>
-            <span className="font-semibold tracking-wider text-base text-fg group-hover:text-primary transition-colors">
-              DEGRADE
-            </span>
+            <div className="flex flex-col">
+              <span className="font-semibold tracking-wider text-base text-fg group-hover:text-primary transition-colors">
+                DHUND
+              </span>
+              <span className="hidden lg:block text-[9px] font-mono text-muted -mt-1 tracking-tight">
+                Decision-making Hub for Uncertain & Network-Denied Domains
+              </span>
+            </div>
           </Link>
 
           {/* Navigation Links based on role */}
@@ -132,8 +139,17 @@ export const Navbar: React.FC = () => {
           )}
         </div>
 
-        {/* Right: Role Badge, Theme Toggle & User Menu */}
-        <div className="flex items-center gap-3">
+        {/* Right: How To Test Guide, Role Badge, Theme Toggle & User Menu */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            onClick={() => setGuideModalOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-control bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 transition-colors text-xs font-medium shadow-xs"
+            title="Open Interactive Testing Guide & Roles"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">How To Test</span>
+          </button>
+
           <ThemeToggle />
 
           {user ? (
@@ -183,6 +199,11 @@ export const Navbar: React.FC = () => {
           )}
         </div>
       </div>
+
+      <HowToTestModal
+        isOpen={guideModalOpen}
+        onClose={() => setGuideModalOpen(false)}
+      />
     </header>
   );
 };

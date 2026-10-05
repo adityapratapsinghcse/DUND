@@ -41,13 +41,36 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
     return (document.documentElement.getAttribute('data-theme') as 'light' | 'dark') || 'light';
   });
 
+const FALLBACK_RASTER_STYLE: any = {
+  version: 8,
+  sources: {
+    'osm-tiles': {
+      type: 'raster',
+      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '© OpenStreetMap',
+    },
+  },
+  layers: [
+    {
+      id: 'osm-tiles',
+      type: 'raster',
+      source: 'osm-tiles',
+      minzoom: 0,
+      maxzoom: 19,
+    },
+  ],
+};
+
   // Watch theme changes to swap map style
   useEffect(() => {
     const handleThemeChange = (e: any) => {
       const nextTheme = e.detail || (document.documentElement.getAttribute('data-theme') as 'light' | 'dark') || 'light';
       setCurrentTheme(nextTheme);
       if (map.current) {
-        map.current.setStyle(nextTheme === 'dark' ? CARTO_DARK_MATTER : CARTO_POSITRON);
+        try {
+          map.current.setStyle(nextTheme === 'dark' ? CARTO_DARK_MATTER : CARTO_POSITRON);
+        } catch (_) {}
       }
     };
 
@@ -61,24 +84,52 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
 
     const initialStyle = currentTheme === 'dark' ? CARTO_DARK_MATTER : CARTO_POSITRON;
 
-    map.current = new maplibregl.Map({
+    const m = new maplibregl.Map({
       container: mapContainer.current,
       style: initialStyle,
       center: center,
       zoom: zoom,
       attributionControl: false,
     });
+    map.current = m;
 
-    map.current.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    m.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
-    map.current.on('click', (e) => {
+    m.on('error', (e) => {
+      if (e && e.error && (e.error.message?.includes('style') || (e.error as any).status >= 400)) {
+        try {
+          m.setStyle(FALLBACK_RASTER_STYLE);
+        } catch (_) {}
+      }
+    });
+
+    m.on('load', () => {
+      m.resize();
+    });
+
+    m.on('click', (e) => {
       if (onMapClick) {
         onMapClick({ lat: Number(e.lngLat.lat.toFixed(5)), lon: Number(e.lngLat.lng.toFixed(5)) });
       }
     });
 
+    // ResizeObserver ensures canvas always recalculates when flex layout sizes change
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && mapContainer.current) {
+      resizeObserver = new ResizeObserver(() => {
+        m.resize();
+      });
+      resizeObserver.observe(mapContainer.current);
+    }
+
+    const t1 = setTimeout(() => m.resize(), 150);
+    const t2 = setTimeout(() => m.resize(), 500);
+
     return () => {
-      map.current?.remove();
+      clearTimeout(t1);
+      clearTimeout(t2);
+      resizeObserver?.disconnect();
+      m.remove();
       map.current = null;
     };
   }, []);
@@ -257,7 +308,7 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
 
   return (
     <div className={`relative w-full h-full min-h-[350px] overflow-hidden rounded-card border border-border ${className}`}>
-      <div ref={mapContainer} className="w-full h-full" />
+      <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
       {/* Map legend strip */}
       <div className="absolute bottom-2 left-2 z-10 flex items-center gap-3 px-3 py-1.5 rounded-chip bg-surface/90 backdrop-blur-md border border-border text-[11px] font-mono shadow-sm">
         <span className="flex items-center gap-1.5">

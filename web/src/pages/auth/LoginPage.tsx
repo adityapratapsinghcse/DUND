@@ -103,28 +103,33 @@ export const LoginPage: React.FC = () => {
             <span className="w-1 h-5 bg-primary/70 rounded-xs" />
             <span className="w-1 h-6 bg-primary/30 rounded-xs" />
           </div>
-          <span className="font-semibold text-lg tracking-wider text-fg">DEGRADE</span>
+          <div>
+            <span className="font-semibold text-lg tracking-wider text-fg">DHUND</span>
+            <span className="hidden sm:inline-block ml-2 text-[10px] font-mono text-muted">
+              Decision-making Hub
+            </span>
+          </div>
         </div>
 
         {/* Core Problem Narrative */}
-        <div className="relative z-10 my-auto py-10 max-w-lg">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-chip bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-4">
+        <div className="relative z-10 my-auto py-8 max-w-lg">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-chip bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-3">
             <Sparkles className="w-3.5 h-3.5" />
-            SIH 2026 • PS ID 26248 • MoD / DSSC
+            SIH 2026 • PS ID 26248 • Ministry of Defence / DSSC
           </div>
           <h1 className="text-2xl md:text-3xl font-semibold text-fg tracking-tight leading-snug">
-            Immersive Multi-Domain Decision Trainer for Degraded Comms
+            DHUND — Decision-making Hub for Uncertain & Network-Denied Domains
           </h1>
-          <p className="mt-3 text-sm text-muted leading-relaxed">
-            The server holds the ground truth. Trainees command under severe uncertainty: delayed reports, electromagnetic jamming, and spoofed relays. Instructors inject live disruptions and evaluate calibration in post-exercise reviews.
+          <p className="mt-3 text-xs md:text-sm text-muted leading-relaxed">
+            The server holds the absolute ground truth. Every commander perceives degraded telemetry: delayed reports, electromagnetic jamming, dropped packets, and spoofed relays. Instructors inject disruptions live and evaluate decision calibration.
           </p>
 
-          <div className="mt-8 grid grid-cols-2 gap-4 text-xs font-mono text-muted">
-            <div className="p-3 rounded-control bg-surface border border-border/80">
+          <div className="mt-6 grid grid-cols-2 gap-3 text-xs font-mono text-muted">
+            <div className="p-2.5 rounded-control bg-surface border border-border/80">
               <span className="block text-fg font-semibold">DOMAINS</span>
               Land • Air • Cyber • EW
             </div>
-            <div className="p-3 rounded-control bg-surface border border-border/80">
+            <div className="p-2.5 rounded-control bg-surface border border-border/80">
               <span className="block text-fg font-semibold">CALIBRATION</span>
               Brier Accuracy Scoring
             </div>
@@ -133,53 +138,64 @@ export const LoginPage: React.FC = () => {
 
         {/* Footer info */}
         <div className="relative z-10 text-xs text-muted/70 font-mono">
-          Defence Services Staff College • Tactical Simulation Platform
+          Defence Services Staff College • Tactical Multi-Domain Simulation Platform
         </div>
       </div>
 
       {/* Right: Authentication Form */}
-      <div className="flex-1 flex flex-col justify-center items-center p-8 md:p-14 bg-surface">
-        <div className="w-full max-w-sm space-y-6">
+      <div className="flex-1 flex flex-col justify-center items-center p-6 md:p-12 bg-surface">
+        <div className="w-full max-w-sm space-y-5">
           <div>
             <h2 className="text-xl font-semibold text-fg">
-              {isRegister ? 'Register Trainee Account' : 'Sign in to DEGRADE'}
+              {isRegister ? 'Register Trainee Account' : 'Sign in to DHUND'}
             </h2>
             <p className="mt-1 text-xs text-muted">
               {isRegister
                 ? 'Create a trainee profile to join simulation exercises.'
-                : 'Enter your credentials to access your tactical station.'}
+                : 'Enter your tactical credentials or use 1-click demo profiles below.'}
             </p>
           </div>
 
           {/* Quick Demo Pre-fills */}
           <div className="p-3 rounded-control bg-surface-2 border border-border space-y-2">
-            <div className="text-[11px] font-medium text-muted uppercase tracking-wider flex items-center gap-1.5">
-              <KeyRound className="w-3 h-3 text-primary" /> Quick Demo Credentials:
+            <div className="text-[11px] font-medium text-muted uppercase tracking-wider flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <KeyRound className="w-3 h-3 text-primary" /> 1-Click Demo Profiles:
+              </span>
+              <span className="text-[10px] text-muted">Click to auto-fill</span>
             </div>
-            <div className="grid grid-cols-3 gap-1.5 text-xs font-mono">
+            <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
               <button
                 type="button"
                 onClick={() => setDemoCredentials('instructor', 'instructor123')}
-                className="py-1 px-2 rounded-control bg-surface hover:bg-border text-fg text-center border border-border transition-colors truncate"
-                title="Instructor"
+                className="py-1 px-2 rounded-control bg-surface hover:bg-border text-fg text-left border border-border transition-colors truncate"
+                title="Tactical Instructor"
               >
-                Instructor
+                🎖️ Instructor
               </button>
               <button
                 type="button"
                 onClick={() => setDemoCredentials('land1', 'trainee123')}
-                className="py-1 px-2 rounded-control bg-surface hover:bg-border text-fg text-center border border-border transition-colors truncate"
+                className="py-1 px-2 rounded-control bg-surface hover:bg-border text-fg text-left border border-border transition-colors truncate"
                 title="Trainee Land"
               >
-                Trainee (Land)
+                🛡️ Land Trainee
+              </button>
+              <button
+                type="button"
+                onClick={() => setDemoCredentials('air1', 'trainee123')}
+                className="py-1 px-2 rounded-control bg-surface hover:bg-border text-fg text-left border border-border transition-colors truncate"
+                title="Trainee Air"
+              >
+                ✈️ Air Trainee
               </button>
               <button
                 type="button"
                 onClick={() => setDemoCredentials('admin', 'admin12345')}
-                className="py-1 px-2 rounded-control bg-surface hover:bg-border text-fg text-center border border-border transition-colors truncate"
-                title="Admin"
+                className="py-1 px-2 rounded-control bg-surface hover:bg-border text-fg text-left border border-border transition-colors truncate"
+                title="System Admin"
               >
-                Admin
+                ⚙️ Admin
               </button>
             </div>
           </div>

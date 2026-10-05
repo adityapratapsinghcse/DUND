@@ -1,4 +1,4 @@
-# DEGRADE — Immersive Multi-Domain Decision-Making Trainer for Degraded Communication Environments
+# DHUND — Decision-making Hub for Uncertain & Network-Denied Domains
 
 [![SIH 2026](https://img.shields.io/badge/SIH%202026-PS%20ID%2026248-blue.svg)](https://www.sih.gov.in)
 [![Ministry of Defence](https://img.shields.io/badge/Ministry%20of%20Defence-DSSC-green.svg)](https://www.mod.gov.in)
@@ -12,9 +12,9 @@
 ---
 
 ## 🎖️ Executive Summary
-In multi-domain military operations (Land, Air, Cyber, and Electronic Warfare), communication systems are actively targeted through electromagnetic jamming, satellite downlink degradation, and deception spoofing.
+In modern conflicts across Land, Air, Cyber, and Electronic Warfare (EW), electronic attacks and jamming degrade, delay, or spoof military telemetry.
 
-**DEGRADE** is a tactical decision-making simulator where the central server holds the absolute **ground truth**, while each commander only perceives a degraded reality shaped by physical link quality, electromagnetic jamming zones, and global contestation intensity.
+**DHUND** (**D**ecision-making **H**ub for **U**ncertain & **N**etwork-**D**enied Domains) is an immersive tactical simulation system where the server maintains absolute **Ground Truth**, while every trainee commander perceives degraded telemetry (delays, dropouts, corrupted coordinates, and contradictory relays). Instructors inject live disruptions and evaluate decision calibration (Brier score) during comprehensive After-Action Reviews (AAR).
 
 Commanders train under high stress and uncertainty, learn to cross-examine conflicting intelligence, and calibrate their confidence. Instructors command real-time exercise controls, inject disruptions live, and conduct comprehensive After-Action Reviews (AAR) contrasting **"What Was True" vs. "What You Saw"**.
 
@@ -62,13 +62,24 @@ DEFENCE_SIH/
 - Node.js 20+ and npm 10+
 - (Optional) Docker & Docker Compose
 
-### 2. Windows 1-Click Launch (PowerShell)
-From the `DEFENCE_SIH` directory:
+### 2. Windows 1-Click Complete Launch (Recommended)
+Simply double-click `RUN_DHUND.bat` in the workspace root, or run:
+```cmd
+RUN_DHUND.bat
+```
+*What this does automatically:*
+1. Detects Python 3.11.
+2. Applies database migrations and loads demo seeds (`seed_demo`).
+3. Launches the Backend ASGI Daphne server on `http://127.0.0.1:8000`.
+4. Launches the Vite Web Client on `http://localhost:5173`.
+5. Automatically opens your default web browser to the sign-in page!
+
+### 3. Windows PowerShell Alternative
 ```powershell
 .\scripts\dev.ps1
 ```
 
-### 3. Linux / macOS 1-Click Launch (Bash)
+### 4. Linux / macOS 1-Click Launch (Bash)
 ```bash
 chmod +x scripts/dev.sh
 ./scripts/dev.sh

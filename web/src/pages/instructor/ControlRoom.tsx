@@ -275,6 +275,21 @@ export const ControlRoom: React.FC = () => {
         </div>
       </div>
 
+      {/* Lobby Guidance Banner */}
+      {exerciseStatus === 'LOBBY' && (
+        <div className="bg-primary/10 border-b border-primary/20 px-4 py-2 flex flex-wrap items-center justify-between gap-2 text-xs text-primary shrink-0">
+          <div className="flex items-center gap-2">
+            <Radio className="w-4 h-4 animate-pulse shrink-0" />
+            <span>
+              <strong>Simulation Standing By:</strong> Trainees can join using room code <strong className="font-mono text-fg bg-surface px-1.5 py-0.5 rounded border border-border">{joinCode}</strong> (or via <strong>1-Click Join</strong> on their screen). When ready, click <strong>"Start Exercise"</strong>!
+            </span>
+          </div>
+          <Button size="sm" variant="primary" onClick={handleStart} className="gap-1.5 shrink-0">
+            <Play className="w-3.5 h-3.5" /> Start Exercise Now
+          </Button>
+        </div>
+      )}
+
       {/* 3-Column Main Area */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 p-2 overflow-hidden">
         {/* Left Column: Comms Matrix & Participants (3 Cols) */}

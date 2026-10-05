@@ -11,8 +11,8 @@ import { TacticalMap } from '../../components/map/TacticalMap.js';
 import { CommsFeed } from './CommsFeed.js';
 import { DecisionPanel } from './DecisionPanel.js';
 import { TraineeScorecardView } from './TraineeScorecardView.js';
-import { RealtimeClient, TraineeReport, Scorecard, ActionType } from '@degrade/shared';
-import { Radio, Users, Clock, Shield, AlertTriangle, Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { RealtimeClient, TraineeReport, Scorecard, ActionType, Exercise } from '@degrade/shared';
+import { Radio, Users, Clock, Shield, AlertTriangle, Wifi, WifiOff, RefreshCw, Zap } from 'lucide-react';
 
 const WS_BASE_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000';
 
@@ -34,6 +34,8 @@ export const TraineePage: React.FC = () => {
   // Join Modal State
   const [joinCode, setJoinCode] = useState<string>('');
   const [isJoining, setIsJoining] = useState<boolean>(false);
+  const [activeExercises, setActiveExercises] = useState<Exercise[]>([]);
+  const [isLoadingExercises, setIsLoadingExercises] = useState<boolean>(false);
 
   // Live Tactical State
   const [elapsedSec, setElapsedSec] = useState<number>(0);
@@ -118,24 +120,46 @@ export const TraineePage: React.FC = () => {
     }
   }, [exerciseStatus, exerciseId]);
 
-  const handleJoin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!joinCode) return;
+  const fetchActiveExercises = async () => {
+    setIsLoadingExercises(true);
+    try {
+      const data = await api.getExercises();
+      setActiveExercises(data.filter((e) => e.status === 'LOBBY' || e.status === 'RUNNING'));
+    } catch (_) {}
+    finally {
+      setIsLoadingExercises(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!exerciseId) {
+      fetchActiveExercises();
+    }
+  }, [exerciseId]);
+
+  const handleJoinWithCode = async (codeToJoin: string, roleToJoin?: string) => {
+    const role = roleToJoin || myRole;
     setIsJoining(true);
 
     try {
-      const res = await api.joinExercise(joinCode, myRole);
+      const res = await api.joinExercise(codeToJoin, role);
       setExerciseId(res.exercise_id);
       setExerciseStatus(res.status);
       setScenarioTitle(res.scenario_title);
       localStorage.setItem('degrade-active-exercise-id', String(res.exercise_id));
-      localStorage.setItem('degrade-my-role', myRole);
+      localStorage.setItem('degrade-my-role', role);
       toast('Successfully joined exercise station!', 'success');
     } catch (err: any) {
       toast(err.message || 'Failed to join exercise. Check code.', 'danger');
     } finally {
       setIsJoining(false);
     }
+  };
+
+  const handleJoin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!joinCode) return;
+    await handleJoinWithCode(joinCode, myRole);
   };
 
   const handleSetPosition = async (coords: { lat: number; lon: number }) => {
@@ -223,6 +247,65 @@ export const TraineePage: React.FC = () => {
               Enter Simulation Station
             </Button>
           </form>
+
+          {/* 1-Click Quick Join for Live Sessions */}
+          <div className="space-y-3 pt-3 border-t border-border">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold text-fg flex items-center gap-1.5">
+                <Radio className="w-3.5 h-3.5 text-primary" />
+                Live Sessions ({activeExercises.length}):
+              </span>
+              <button
+                type="button"
+                onClick={fetchActiveExercises}
+                className="text-[11px] text-muted hover:text-fg flex items-center gap-1 transition-colors"
+                title="Refresh available sessions"
+              >
+                <RefreshCw className={`w-3 h-3 ${isLoadingExercises ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+            </div>
+
+            {activeExercises.length > 0 ? (
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-0.5">
+                {activeExercises.map((ex) => (
+                  <div
+                    key={ex.id}
+                    className="p-2.5 rounded-control bg-surface-2 border border-border hover:border-primary/50 transition-colors flex items-center justify-between gap-3 text-xs"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <Badge variant={ex.status === 'RUNNING' ? 'success' : 'warning'} size="sm">
+                          {ex.status}
+                        </Badge>
+                        <span className="font-mono font-bold tracking-wider text-primary">{ex.join_code}</span>
+                      </div>
+                      <p className="text-[11px] text-muted truncate mt-0.5" title={ex.scenario_title}>
+                        {ex.scenario_title}
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleJoinWithCode(ex.join_code)}
+                      isLoading={isJoining}
+                      className="shrink-0 text-xs py-1 px-2.5"
+                    >
+                      1-Click Join
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-3 rounded-control bg-surface-2/60 border border-border/70 text-[11px] text-muted text-center space-y-1">
+                <p>No active sessions found.</p>
+                <p className="text-[10px] text-muted/80">
+                  Open an <strong>Instructor tab</strong> to launch a session, then click Refresh!
+                </p>
+              </div>
+            )}
+          </div>
         </Card>
       </div>
     );
@@ -253,12 +336,15 @@ export const TraineePage: React.FC = () => {
             </span>
             <h2 className="text-xl font-semibold text-fg mt-1">Lobby: Waiting for Instructor</h2>
             <p className="text-xs text-muted mt-2">
-              The exercise coordinator is preparing the tactical scenario. The simulation will engage automatically once launched.
+              You are connected to the exercise room! The <strong>Tactical Map</strong> and <strong>Live Radar</strong> will activate automatically on this screen the moment the instructor clicks <strong>"Start Exercise"</strong> in their control room.
             </p>
           </div>
-          <div className="p-3 rounded-control bg-surface-2 border border-border text-xs font-mono text-muted flex items-center justify-center gap-2">
-            <Radio className="w-3.5 h-3.5 text-primary animate-pulse" />
-            <span>Telemetry Link: ONLINE</span>
+          <div className="p-3 rounded-control bg-surface-2 border border-border text-xs font-mono text-muted flex flex-col gap-1 items-center justify-center">
+            <div className="flex items-center gap-2">
+              <Radio className="w-3.5 h-3.5 text-primary animate-pulse" />
+              <span>Telemetry Link: ONLINE & STANDBY</span>
+            </div>
+            <span className="text-[10px] text-muted">Awaiting instructor launch signal...</span>
           </div>
           <Button variant="outline" size="sm" onClick={handleLeaveExercise}>
             Cancel & Change Station
