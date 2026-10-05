@@ -223,7 +223,7 @@ export const ControlRoom: React.FC = () => {
     : reports.filter((r) => r.participant_role === viewLayer);
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-3.5rem)] overflow-hidden">
+    <div className="flex-1 flex flex-col lg:h-[calc(100vh-3.5rem)] lg:overflow-hidden">
       {/* Top Exercise Command Strip */}
       <div className="h-12 px-4 border-b border-border bg-surface flex items-center justify-between text-xs shrink-0">
         <div className="flex items-center gap-3">
@@ -291,9 +291,9 @@ export const ControlRoom: React.FC = () => {
       )}
 
       {/* 3-Column Main Area */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 p-2 overflow-hidden">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 p-2 lg:overflow-hidden">
         {/* Left Column: Comms Matrix & Participants (3 Cols) */}
-        <div className="lg:col-span-3 flex flex-col gap-2 overflow-y-auto">
+        <div className="lg:col-span-3 flex flex-col gap-2 lg:overflow-y-auto">
           {/* Contestation Intensity Slider */}
           <Card className="p-3 space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold">
@@ -409,7 +409,7 @@ export const ControlRoom: React.FC = () => {
         </div>
 
         {/* Right Column: Injects & Live Decisions (3 Cols) */}
-        <div className="lg:col-span-3 flex flex-col gap-2 overflow-y-auto">
+        <div className="lg:col-span-3 flex flex-col gap-2 lg:overflow-y-auto">
           {/* Dynamic Inject Panel */}
           <Card className="p-3 space-y-3">
             <div className="flex items-center justify-between border-b border-border pb-1.5">

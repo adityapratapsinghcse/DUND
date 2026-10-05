@@ -356,7 +356,7 @@ export const TraineePage: React.FC = () => {
 
   // 4. Exercise is RUNNING / PAUSED: Full Tactical Screen
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-3.5rem)] overflow-hidden">
+    <div className="flex-1 flex flex-col lg:h-[calc(100vh-3.5rem)] lg:overflow-hidden">
       {/* Top Status Strip */}
       <div className="h-11 px-4 border-b border-border bg-surface flex items-center justify-between text-xs shrink-0">
         <div className="flex items-center gap-4">
@@ -397,9 +397,9 @@ export const TraineePage: React.FC = () => {
       </div>
 
       {/* Main Tactical Screen: Map (Center) + Feed (Side) */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden">
         {/* Center: Map & Decision Panel */}
-        <div className="flex-1 flex flex-col h-full overflow-hidden p-3 gap-3">
+        <div className="flex-1 flex flex-col lg:h-full lg:overflow-hidden p-3 gap-3 min-h-[550px] lg:min-h-0">
           <div className="flex-1 relative min-h-0">
             <TacticalMap
               reports={reports}
